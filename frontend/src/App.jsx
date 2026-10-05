@@ -1,20 +1,17 @@
 import { useState } from "react";
 import "./App.css";
 
-const API_URL = "http://127.0.0.1:8000";
-
 function App() {
+  const [mode, setMode] = useState("login");
+
   const [formData, setFormData] = useState({
     fullName: "",
-    street: "",
-    city: "",
-    age: "",
-    favColors: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
-  const [saving, setSaving] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -25,172 +22,237 @@ function App() {
     }));
   }
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
     setMessage("");
-    setError("");
-    setSaving(true);
 
-    const student = {
-      "full name": formData.fullName,
-      address: {
-        street: formData.street,
-        city: formData.city,
-        age: formData.age,
-        "fav colors": formData.favColors
-          .split(",")
-          .map((color) => color.trim())
-          .filter(Boolean),
-      },
-    };
-
-    try {
-      const response = await fetch(`${API_URL}/students`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(student),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.detail || "Failed to save student");
+    if (mode === "signup") {
+      if (formData.password !== formData.confirmPassword) {
+        setMessage("Passwords do not match.");
+        return;
       }
 
-      setMessage(`Student saved successfully • ID: ${result.id}`);
-
-      setFormData({
-        fullName: "",
-        street: "",
-        city: "",
-        age: "",
-        favColors: "",
-      });
-    } catch (err) {
-      setError(err.message || "Something went wrong");
-    } finally {
-      setSaving(false);
+      setMessage("Account created successfully.");
+      return;
     }
+
+    setMessage("Login submitted successfully.");
+  }
+
+  function switchMode() {
+    setMode(mode === "login" ? "signup" : "login");
+    setMessage("");
+
+    setFormData({
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    });
   }
 
   return (
-    <main className="app">
+    <main className="auth-page">
+
+      {/* NAVBAR */}
       <nav className="navbar">
-        <div className="brand">STUDENT<span>DB</span></div>
+        <div className="brand">
+          STUDENT<span>DB</span>
+        </div>
+
         <div className="nav-status">
-          <span className="status-dot" />
+          <span className="status-dot"></span>
           MongoDB Connected
         </div>
       </nav>
 
-      <section className="hero">
-        <div className="hero-content">
+      {/* AUTH SECTION */}
+      <section className="auth-section">
+
+        {/* LEFT SIDE */}
+        <div className="auth-content">
+
           <p className="kicker">STUDENT MANAGEMENT</p>
-          <h1>Build your<br /><span>student list.</span></h1>
-          <p className="hero-text">
-            Add a student and send their data directly to your FastAPI backend.
-          </p>
+
+          {mode === "login" ? (
+            <>
+              <h1>
+                Welcome<br />
+                <span>back.</span>
+              </h1>
+
+              <p className="hero-text">
+                Sign in to access your student management dashboard.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>
+                Create your<br />
+                <span>account.</span>
+              </h1>
+
+              <p className="hero-text">
+                Create an account and start managing your student records.
+              </p>
+            </>
+          )}
 
           <div className="feature-row">
-            <div><strong>01</strong><span>Enter data</span></div>
-            <div><strong>02</strong><span>Send API request</span></div>
-            <div><strong>03</strong><span>Save to MongoDB</span></div>
+            <div>
+              <strong>01</strong>
+              <span>Secure login</span>
+            </div>
+
+            <div>
+              <strong>02</strong>
+              <span>Manage students</span>
+            </div>
+
+            <div>
+              <strong>03</strong>
+              <span>MongoDB storage</span>
+            </div>
           </div>
+
         </div>
 
-        <div className="form-panel">
+        {/* RIGHT SIDE */}
+        <div className="auth-panel">
+
           <div className="panel-heading">
             <div>
-              <p className="panel-kicker">NEW RECORD</p>
-              <h2>Add Student</h2>
+              <p className="panel-kicker">
+                {mode === "login" ? "WELCOME BACK" : "NEW ACCOUNT"}
+              </p>
+
+              <h2>
+                {mode === "login" ? "Login" : "Sign Up"}
+              </h2>
             </div>
-            <div className="record-icon">+</div>
+
+            <div className="record-icon">
+              {mode === "login" ? "→" : "+"}
+            </div>
           </div>
 
           <form onSubmit={handleSubmit}>
+
+            {/* FULL NAME ONLY FOR SIGNUP */}
+            {mode === "signup" && (
+              <div className="field full">
+                <label htmlFor="fullName">FULL NAME</label>
+
+                <input
+                  id="fullName"
+                  name="fullName"
+                  type="text"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="e.g. Iqra Mahjabeen"
+                  required
+                />
+              </div>
+            )}
+
+            {/* EMAIL */}
             <div className="field full">
-              <label htmlFor="fullName">FULL NAME</label>
+              <label htmlFor="email">EMAIL</label>
+
               <input
-                id="fullName"
-                name="fullName"
-                value={formData.fullName}
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleChange}
-                placeholder="e.g. Ali Khan"
+                placeholder="you@example.com"
                 required
               />
             </div>
 
-            <div className="field-grid">
-              <div className="field">
-                <label htmlFor="street">STREET</label>
-                <input
-                  id="street"
-                  name="street"
-                  value={formData.street}
-                  onChange={handleChange}
-                  placeholder="ABC Road"
-                  required
-                />
-              </div>
+            {/* PASSWORD */}
+            <div className="field full">
+              <label htmlFor="password">PASSWORD</label>
 
-              <div className="field">
-                <label htmlFor="city">CITY</label>
-                <input
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  placeholder="Karachi"
-                  required
-                />
-              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+              />
             </div>
 
-            <div className="field-grid">
-              <div className="field">
-                <label htmlFor="age">AGE</label>
+            {/* CONFIRM PASSWORD */}
+            {mode === "signup" && (
+              <div className="field full">
+                <label htmlFor="confirmPassword">
+                  CONFIRM PASSWORD
+                </label>
+
                 <input
-                  id="age"
-                  name="age"
-                  value={formData.age}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="16"
+                  placeholder="Confirm your password"
                   required
                 />
               </div>
+            )}
 
-              <div className="field">
-                <label htmlFor="favColors">FAVOURITE COLORS</label>
-                <input
-                  id="favColors"
-                  name="favColors"
-                  value={formData.favColors}
-                  onChange={handleChange}
-                  placeholder="red, blue, green"
-                />
-              </div>
-            </div>
-
-            <button type="submit" disabled={saving}>
-              {saving ? "SAVING..." : "SAVE STUDENT"}
-              {!saving && <span>→</span>}
+            <button type="submit">
+              {mode === "login" ? "LOGIN" : "CREATE ACCOUNT"}
+              <span>→</span>
             </button>
+
           </form>
 
-          {message && <div className="notice success">{message}</div>}
-          {error && <div className="notice error">{error}</div>}
+          {message && (
+            <div
+              className={`notice ${
+                message.includes("successfully")
+                  ? "success"
+                  : "error"
+              }`}
+            >
+              {message}
+            </div>
+          )}
+
+          {/* SWITCH LOGIN / SIGNUP */}
+          <div className="switch-auth">
+            <span>
+              {mode === "login"
+                ? "Don't have an account?"
+                : "Already have an account?"}
+            </span>
+
+            <button
+              type="button"
+              className="switch-button"
+              onClick={switchMode}
+            >
+              {mode === "login" ? "Sign Up" : "Login"}
+            </button>
+          </div>
+
         </div>
+
       </section>
 
+      {/* FOOTER */}
       <footer>
         <span>FASTAPI</span>
-        <span className="line" />
+        <span className="line"></span>
         <span>MONGODB ATLAS</span>
-        <span className="line" />
+        <span className="line"></span>
         <span>STUDENT PORTAL</span>
       </footer>
+
     </main>
   );
 }
