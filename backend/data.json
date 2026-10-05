@@ -1,0 +1,49 @@
+{
+  "root": [
+    {
+      "full name": "Courtney Fadel",
+      "address": {
+        "street": "1883 Estevan Mill",
+        "city": "Žitenice",
+        "age": "vol",
+        "fav colors": ["red", "blue", "green"]
+      }
+    },
+    {
+      "full name": "Luis Conn",
+      "address": {
+        "street": "5298 Reggie Isle",
+        "city": "Ashton",
+        "age": "c",
+        "fav colors": ["purple", "yellow", "black"]
+      }
+    },
+    {
+      "full name": "Russell Stehr",
+      "address": {
+        "street": "90662 Lemke Cove",
+        "city": "Avarua",
+        "age": "",
+        "fav colors": ["orange", "white", "teal"]
+      }
+    },
+    {
+      "full name": "Tomas Kuphal",
+      "address": {
+        "street": "5180 Runolfsdottir Estate",
+        "city": "Yong Peng",
+        "age": "ve",
+        "fav colors": ["pink", "blue", "gray"]
+      }
+    },
+    {
+      "full name": "Abel Greenfelder",
+      "address": {
+        "street": "5715 Rebeca Road",
+        "city": "Cacaopera",
+        "age": "",
+        "fav colors": ["green", "gold", "red"]
+      }
+    }
+  ]
+}
